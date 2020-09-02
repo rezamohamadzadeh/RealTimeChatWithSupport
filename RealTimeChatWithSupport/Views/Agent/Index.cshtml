@@ -1,0 +1,55 @@
+﻿@model RealTimeChatWithSupport.Models.SendFileDto
+@{
+    ViewData["Title"] = "Support agent dashboard";
+    ViewData["Subtitle"] = "Connect with customers and answer questions live.";
+}
+
+<link rel="stylesheet" href="~/css/chat.css" />
+
+<div class="jumbotron">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <p class="lead">@ViewData["Subtitle"]</p>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div id="roomList" class="list-group">
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <ul id="chatHistory" class="card-body"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <form id="chatForm" class="form-inline mt-2">
+                        <input id="messageTextbox" type="text" placeholder="Type a message" class="form-control mr-sm-2 flex-grow-1" />
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                    <form id="fileForm" action="Index" data-ajax-failure="AddFailed" data-ajax-success="AddSuccess"
+                          data-ajax="true" data-ajax-method="POST" enctype="multipart/form-data">
+                        <input type="file" asp-for="File" name="file" />
+                        <input type="hidden" asp-for="RoomId" name="RoomId" />
+
+                        <button type="submit" id="SendFile">Send</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/js/agent.js"></script>
+
+<script>
+    function AddFailed() {
+    }
+    function AddSuccess() {
+    }
+
+</script>
