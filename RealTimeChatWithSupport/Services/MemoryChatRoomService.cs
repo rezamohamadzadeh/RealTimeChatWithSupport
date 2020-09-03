@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace RealTimeChatWithSupport.Services
 {
+    /// <summary>
+    /// These functions are used to record information in the database.
+    /// </summary>
     public class MemoryChatRoomService : IChatRoomService
     {
         private IHttpContextAccessor _httpAccessor { get; }
@@ -21,7 +24,12 @@ namespace RealTimeChatWithSupport.Services
             _sp = sp;
         }
 
-
+        /// <summary>
+        /// Store Messages in db
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public Task AddMessage(Guid roomId, ChatMessage message)
         {
             try
@@ -43,7 +51,11 @@ namespace RealTimeChatWithSupport.Services
             }
 
         }
-
+        /// <summary>
+        /// When a new group is created, its details are stored in the database
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
         public Task<Guid> CreateRoom(string connectionId)
         {
             try
@@ -65,7 +77,10 @@ namespace RealTimeChatWithSupport.Services
                 throw;
             }
         }
-        
+        /// <summary>
+        /// Get all rooms(groups) for Admin 
+        /// </summary>
+        /// <returns></returns>
         public Task<List<ChatRoom>> GetAllRooms()
         {
             try
@@ -85,7 +100,11 @@ namespace RealTimeChatWithSupport.Services
             }
 
         }
-
+        /// <summary>
+        /// Get group messages by roomId
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         public Task<List<ChatMessage>> GetMessageHistory(Guid roomId)
         {
             try
@@ -110,7 +129,11 @@ namespace RealTimeChatWithSupport.Services
                 throw;
             }
         }
-
+        /// <summary>
+        /// Get Room values by connectionId
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
         public Task<ChatRoom> GetRoomForConnectionId(string connectionId)
         {
             try
@@ -136,6 +159,13 @@ namespace RealTimeChatWithSupport.Services
             }
         }
 
+
+        /// <summary>
+        /// After created room, this function set room name in same room record in db
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Task<ChatRoom> SetRoomName(Guid roomId, string name)
         {
             try
@@ -162,6 +192,12 @@ namespace RealTimeChatWithSupport.Services
 
         }
 
+
+        /// <summary>
+        /// Get room by roomId
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         public Task<ChatRoom> GetRoom(Guid roomId)
         {
             ChatRoom room;

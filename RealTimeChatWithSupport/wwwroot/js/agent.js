@@ -87,6 +87,8 @@ function switchActiveRoomTo(id) {
 var roomListEl = document.getElementById('roomList');
 var roomHistoryEl = document.getElementById('chatHistory');
 
+//when send message with select Send btn
+
 roomListEl.addEventListener('click', function (e) {
     roomHistoryEl.style.display = 'block';
     setActiveRoomButton(e.target);
@@ -109,7 +111,7 @@ agentConnection.on("SetNewRoom", (room) => {
     var roomButton = createRoomButton(roomInfo);
     roomListEl.appendChild(roomButton);
 });
-
+// when support select room
 function setActiveRoomButton(el) {
     var allButtons = roomListEl.querySelectorAll('a.list-group-item');
 
@@ -119,7 +121,7 @@ function setActiveRoomButton(el) {
 
     el.classList.add('active');
 }
-
+// load all rooms for support
 function loadRooms(rooms) {
     if (!rooms) return;
 
@@ -135,7 +137,7 @@ function loadRooms(rooms) {
 
 
 
-
+//Create room with a tag
 function createRoomButton(roomInfo) {
     var anchorEl = document.createElement('a');
     anchorEl.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
@@ -145,7 +147,7 @@ function createRoomButton(roomInfo) {
 
     return anchorEl;
 }
-
+// Send message
 function addMessages(messages) {
     if (!messages) return;
 
@@ -153,11 +155,13 @@ function addMessages(messages) {
         addMessage(m.senderName, m.sentAt, m.text);
     });
 }
+// if chat window is not focused call GetNotification function
 function CheckWinFocus() {
     if (document.hasFocus()) return true;
     else return false;
 
 }
+// Call notification function
 function GetNotification(name, time, message) {
     Push.create(`Message from ` + name, {
         body: name + ' ' + time + "\n" + message,
@@ -182,6 +186,7 @@ function GetNotification(name, time, message) {
         },
     });
 }
+// show user messages in form
 function addMessage(name, time, message) {
     if (!CheckWinFocus())
         GetNotification(name, time, message);

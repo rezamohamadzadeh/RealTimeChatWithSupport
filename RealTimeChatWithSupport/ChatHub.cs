@@ -32,6 +32,11 @@ namespace RealTimeChatWithSupport
             _sp = sp;
             _httpContext = httpContext;
         }
+        /// <summary>
+        /// Method of disconnecting the user
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var role = _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Role);
@@ -51,6 +56,10 @@ namespace RealTimeChatWithSupport
             await base.OnDisconnectedAsync(exception);
         }
 
+        /// <summary>
+        /// Method of sconnecting the user
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public override async Task OnConnectedAsync()
         {
@@ -76,6 +85,12 @@ namespace RealTimeChatWithSupport
 
             await base.OnConnectedAsync();
         }
+        /// <summary>
+        /// This function is used to send a user message to support
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task SendMessage(string name, string text)
         {
@@ -99,6 +114,13 @@ namespace RealTimeChatWithSupport
                 message.Text);
 
         }
+        /// <summary>
+        ///(Create group by userName) This function is executed when the user selects the connection button by connecting
+        /// to the support and a new group is created based on the user name.
+        /// </summary>
+        /// <param name="visitorName"></param>
+        /// <returns></returns>
+
         [Authorize]
         public async Task SetName(string visitorName)
         {
@@ -118,6 +140,11 @@ namespace RealTimeChatWithSupport
             }
             await _agentHub.Clients.All.SendAsync("SetNewRoom", room);
         }
+        /// <summary>
+        /// This function is used to send the group code to the view and save it in the hidden input tag
+        /// to send the file
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task GetRoomId()
         {
@@ -125,6 +152,11 @@ namespace RealTimeChatWithSupport
             await Clients.Caller.SendAsync("PassRoomId", roomId);
         }
 
+        /// <summary>
+        /// This function is called when the user clicks on the title of the group
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task JoinRoom(Guid roomId)
         {
@@ -160,7 +192,11 @@ namespace RealTimeChatWithSupport
                 throw;
             }
         }
-
+        /// <summary>
+        /// This function is called when the user switch on the other group
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task LeaveRoom(Guid roomId)
         {

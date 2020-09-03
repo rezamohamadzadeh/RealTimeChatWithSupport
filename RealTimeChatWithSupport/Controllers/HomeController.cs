@@ -11,6 +11,10 @@ using RealTimeChatWithSupport.Utility;
 
 namespace RealTimeChatWithSupport.Controllers
 {
+
+    /// <summary>
+    /// Use this controller for users
+    /// </summary>
     [Authorize(Roles = "Affiliate,Buyer")]
     public class HomeController : BaseController
     {
@@ -28,6 +32,13 @@ namespace RealTimeChatWithSupport.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// Upload Files in chat 
+        /// </summary>
+        /// <param name="modeldto"></param>
+        /// <returns></returns>
+
         [HttpPost]
         public virtual async Task<IActionResult> Index(SendFileDto modeldto)
         {

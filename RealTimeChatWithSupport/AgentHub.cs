@@ -3,13 +3,16 @@ using RealTimeChatWithSupport.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 
 namespace RealTimeChatWithSupport
 {
+    /// <summary>
+    /// This section is for support communication,
+    /// Things like selecting user-created groups, sending messages and files by the administrator to the user
+    /// </summary>
+
     [Authorize]
     public class AgentHub : Hub
     {
@@ -23,7 +26,11 @@ namespace RealTimeChatWithSupport
             _chatRoomService = chatRoomService;
             _chatHub = chatHub;
         }
+
         [Authorize]
+
+        // When When the administrator is connected
+
         public override async Task OnConnectedAsync()
         {
             await Clients.Caller.SendAsync(
@@ -32,6 +39,9 @@ namespace RealTimeChatWithSupport
 
             await base.OnConnectedAsync();
         }
+
+        //When the administrator is disconnected
+
         [Authorize]
         public override async Task OnDisconnectedAsync(Exception exception)
         {            
@@ -43,7 +53,11 @@ namespace RealTimeChatWithSupport
                 "The user disconected !");
             await base.OnDisconnectedAsync(exception);
         }
-
+        /// <summary>
+        /// This method is used to set a group called a manager
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task GetRoomID(Guid roomId)
         {
@@ -53,6 +67,12 @@ namespace RealTimeChatWithSupport
             await Clients.AllExcept(id).SendAsync(
                 "GetRoomIdForFilterRooms",room.Id);
         }
+        /// <summary>
+        /// Used to send manager messages to the user
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
 
         [Authorize]
         public async Task SendAgentMessage(Guid roomId, string text)
@@ -74,6 +94,12 @@ namespace RealTimeChatWithSupport
                     message.Text);
             
         }
+
+        /// <summary>
+        /// Used to display messages of a group exchanged by the administrator and the user
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task LoadHistory(Guid roomId)
         {
@@ -89,6 +115,11 @@ namespace RealTimeChatWithSupport
                 claimsIdentity.AddClaim(new Claim("RoomId", roomId.ToString()));
             }
         }
+        /// <summary>
+        /// To pass the group code to View and bind it in the hidden input tag to refer to the action of sending the file
+        /// </summary>
+        /// <returns></returns>
+
         [Authorize]
         public async Task GetRoomIdForUpFile()
         {

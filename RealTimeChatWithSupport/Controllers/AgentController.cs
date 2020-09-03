@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace RealTimeChatWithSupport.Controllers
 {
+    /// <summary>
+    /// Use this controller for admin users
+    /// </summary>
     [Authorize(Roles ="Admin")]
     public class AgentController : BaseController
     {
@@ -26,6 +29,12 @@ namespace RealTimeChatWithSupport.Controllers
         {
             return View();
         }
+
+        /// <summary>
+        /// Upload Files in chat 
+        /// </summary>
+        /// <param name="modeldto"></param>
+        /// <returns></returns>
 
         [HttpPost]
         public virtual async Task<IActionResult> Index(SendFileDto modeldto)
