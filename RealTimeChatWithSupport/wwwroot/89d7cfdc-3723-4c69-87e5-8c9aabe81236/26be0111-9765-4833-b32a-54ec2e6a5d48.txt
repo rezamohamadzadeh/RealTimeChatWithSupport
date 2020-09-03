@@ -1,1 +1,0 @@
-    //"DefaultConnection": "server=144.76.184.174;database=blogtes1_Chat;uid=blogtes1_Chat;password=Mhdo20@2;"

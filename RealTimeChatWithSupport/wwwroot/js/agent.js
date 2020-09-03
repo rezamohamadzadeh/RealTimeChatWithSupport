@@ -153,8 +153,39 @@ function addMessages(messages) {
         addMessage(m.senderName, m.sentAt, m.text);
     });
 }
+function CheckWinFocus() {
+    if (document.hasFocus()) return true;
+    else return false;
 
+}
+function GetNotification(name, time, message) {
+    Push.create(`Message from ` + name, {
+        body: name + ' ' + time + "\n" + message,
+        data: "SinjulMSBH",
+        icon: '',
+        link: "",
+        tag: '',
+        requireInteraction: true,
+        timeout: 5000,
+        vibrate: [200, 100],
+        silent: false,
+        onClick: function () {
+            window.focus();
+        },
+        onClose: function () {
+            this.close();
+        },
+        onError: function () {
+            console.log('onError in notification!');
+        },
+        onShow: function () {
+        },
+    });
+}
 function addMessage(name, time, message) {
+    if (!CheckWinFocus())
+        GetNotification(name, time, message);
+
     var nameSpan = document.createElement('span');
     nameSpan.className = 'name';
     nameSpan.textContent = name;
