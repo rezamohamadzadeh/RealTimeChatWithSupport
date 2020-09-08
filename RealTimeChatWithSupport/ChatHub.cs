@@ -51,7 +51,7 @@ namespace RealTimeChatWithSupport
             await Clients.Group(roomId).SendAsync(
                 "ReceiveMessage",
                 "Support",
-                DateTimeOffset.UtcNow,
+                DateTime.Now,
                 "The user disconected !");
             await base.OnDisconnectedAsync(exception);
         }
@@ -80,7 +80,7 @@ namespace RealTimeChatWithSupport
             await Clients.Caller.SendAsync(
                 "ReceiveMessage",
                 "Hello",
-                DateTimeOffset.UtcNow,
+                DateTime.Now,
                 "How can i help you?");
 
             await base.OnConnectedAsync();

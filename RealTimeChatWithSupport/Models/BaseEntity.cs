@@ -8,12 +8,12 @@ namespace RealTimeChatWithSupport.Models
         public BaseEntity()
         {
             Id = Guid.NewGuid();
-            DateTime = DateTimeOffset.Now;
+            DateTime = DateTime.Now;
         }
 
         [Key]
         public Guid Id { get; set; }
 
-        public DateTimeOffset DateTime { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }

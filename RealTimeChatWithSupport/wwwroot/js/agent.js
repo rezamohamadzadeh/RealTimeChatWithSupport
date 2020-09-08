@@ -198,7 +198,7 @@ function GetNotification(name, time, message) {
 function addMessage(name, time, message) {
     if (!CheckWinFocus())
         GetNotification(name, time, message);
-
+    console.log(name + ' ' + time + ' ' + message)
     var nameSpan = document.createElement('span');
     nameSpan.className = 'name';
     nameSpan.textContent = name;

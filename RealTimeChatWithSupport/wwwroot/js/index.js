@@ -1,6 +1,6 @@
 ﻿var chatterName = 'Visitor';
 var myTimeOut;
-
+var Questions;
 var dialogEl = document.getElementById('chatDialog');
 
 // Initialize the SignalR client
@@ -26,10 +26,33 @@ function startConnection() {
 }
 function runSetTimeOut() {
     clearTimeout(myTimeOut);
-    myTimeOut = window.setTimeout(function () { alert('Ok') }, 15000);
+    myTimeOut = window.setTimeout(function () {
+        alert(10);
+    }, 120000);
 
 }
+function ShowSurveyForm() {
 
+    connection.invoke('GetQuestions', Questions);
+    console.log(Questions);
+    return;
+    var form = `<div id="Survey">
+
+    <p>Which option is the capital of Iran?</p>
+
+    <input type="radio" name="option" value="Esteghlal" /> Esteghlal
+    <br />
+    <input type="radio" name="option" value="Perspolis" /> Perspolis
+    <br />
+    <input type="radio" name="option" value="Sepahan" /> Sepahan
+    <br />
+    <input type="radio" name="option" value="Zobahan" /> Zobahan
+    <br />
+
+    <button onclick="GetVal()">Next</button>
+    <button>Previous</button>
+    </div>`;
+}
 function onDisconnected() {
     dialogEl.classList.add('disconnected');
 }
@@ -91,7 +114,7 @@ function CheckWinFocus() {
 
 }
 function GetNotification(name, time, message) {
-    Push.create(`Message from ` + name  , {
+    Push.create(`Message from ` + name, {
         body: name + ' ' + time + "\n" + message,
         data: "SinjulMSBH",
         icon: '',

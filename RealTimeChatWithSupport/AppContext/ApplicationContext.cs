@@ -6,7 +6,7 @@ using System.IO;
 namespace RealTimeChatWithSupport.AppContext
 {
     public class ApplicationContext : DbContext
-    {        
+    {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -14,7 +14,7 @@ namespace RealTimeChatWithSupport.AppContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if(!optionsBuilder.IsConfigured)
+            if (!optionsBuilder.IsConfigured)
             {
                 IConfigurationRoot configuration = new ConfigurationBuilder()
                         .SetBasePath(Directory.GetCurrentDirectory())
@@ -23,12 +23,15 @@ namespace RealTimeChatWithSupport.AppContext
 
                 optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             }
-            
+
         }
 
-        public DbSet<Answer> Answers { get; set; }
-        public DbSet<ChatRoom> ChatRooms { get; set; }
         public DbSet<Question> Questions { get; set; }
+
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+
+        public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
+
         public DbSet<ChatMessage> ChatMessages { get; set; }
     }
 }

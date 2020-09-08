@@ -32,7 +32,18 @@
             </form>
         </div>
     </div>
+    
 </div>
+
+
+<script>
+    function GetVal() {
+        var radioValue = $("input[name='option']:checked").val();
+        if (radioValue) {
+            alert("Your answer is " + radioValue);
+        }
+    }
+</script>
 <script src="~/js/index.js"></script>
 
 <script>

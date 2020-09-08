@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RealTimeChatWithSupport.Models
 {
-    public class Answer : BaseEntity
+    public class Question : BaseEntity
     {
+        public string QuestionTitle { get; set; }
+
         [Required]
         public string FirstOption { get; set; }
 
@@ -16,18 +20,9 @@ namespace RealTimeChatWithSupport.Models
         [Required]
         public string FourthOption { get; set; }
 
+
         public AnswerOptions TrueAnswer { get; set; }
 
-        public string UserId { get; set; }
-
     }
 
-    public enum AnswerOptions
-    {
-        FirstOption = 1,
-        SecondOption = 2,
-        ThirdOption = 3,
-        FourthOption = 4,
-
-    }
 }
