@@ -1,5 +1,4 @@
-﻿﻿var activeRoomId = '';
-
+﻿var activeRoomId = '';
 var agentConnection = new signalR.HubConnectionBuilder()
     .withUrl('/agentHub')
     .build();
@@ -16,7 +15,7 @@ function startAgentConnection() {
         .catch(function (err) {
             console.error(err);
         });
-    
+
 }
 
 var chatConnection = new signalR.HubConnectionBuilder()
@@ -31,6 +30,13 @@ chatConnection.on('ReceiveMessage', addMessage);
 agentConnection.on('ReceiveMessages', addMessages);
 agentConnection.on('PassRoomId', PassId);
 
+agentConnection.on('RunTimer', runTimerFunc);
+
+function runTimerFunc() {
+    chatConnection.invoke('InitSurveyForm', activeRoomId);
+}
+
+
 function startChatConnection() {
     chatConnection
         .start()
@@ -43,7 +49,9 @@ function PassId(roomId) {
     chatFormEl[1].value = roomId;
 }
 function handleDisconnected(retryFunc) {
-    setTimeout(retryFunc, 5000);
+    timeOut = setTimeout(retryFunc, 5000);
+    clearTimeout()
+
 }
 
 function sendMessage(text) {
@@ -77,7 +85,7 @@ function switchActiveRoomTo(id) {
     removeAllChildren(roomHistoryEl);
 
     if (!id) return;
-    
+
     chatConnection.invoke('JoinRoom', activeRoomId);
     agentConnection.invoke('LoadHistory', activeRoomId);
 
@@ -101,11 +109,11 @@ roomListEl.addEventListener('click', function (e) {
 
 });
 
-agentConnection.on("GetRoomIdForFilterRooms", (roomId) => {    
-    $('#roomList a[data-id="'+ roomId +'"]').remove();
+agentConnection.on("GetRoomIdForFilterRooms", (roomId) => {
+    $('#roomList a[data-id="' + roomId + '"]').remove();
 });
 
-agentConnection.on("SetNewRoom", (room) => {    
+agentConnection.on("SetNewRoom", (room) => {
     var roomInfo = room;
     if (!roomInfo.name) return;
     var roomButton = createRoomButton(roomInfo);

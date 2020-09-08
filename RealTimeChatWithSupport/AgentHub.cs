@@ -81,7 +81,6 @@ namespace RealTimeChatWithSupport
             {
                 SenderName = Context.User.Identity.Name,
                 Text = text,
-                SentAt = DateTimeOffset.UtcNow
             };
 
             await _chatRoomService.AddMessage(roomId, message);
@@ -90,9 +89,10 @@ namespace RealTimeChatWithSupport
                 .Group(roomId.ToString())
                 .SendAsync("ReceiveMessage",
                     message.SenderName,
-                    message.SentAt,
                     message.Text);
-            
+
+            await Clients.Caller.SendAsync("RunTimer");
+                
         }
 
         /// <summary>

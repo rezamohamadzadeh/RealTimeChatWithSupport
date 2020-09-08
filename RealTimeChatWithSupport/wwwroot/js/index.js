@@ -1,4 +1,5 @@
 ﻿var chatterName = 'Visitor';
+var myTimeOut;
 
 var dialogEl = document.getElementById('chatDialog');
 
@@ -9,6 +10,7 @@ var connection = new signalR.HubConnectionBuilder()
 
 connection.on('ReceiveMessage', renderMessage);
 connection.on('PassRoomId', PassId);
+connection.on('RunTimeOut', runSetTimeOut);
 
 connection.onclose(function () {
     onDisconnected();
@@ -21,6 +23,11 @@ function startConnection() {
         .catch(function (err) {
             console.error(err);
         });
+}
+function runSetTimeOut() {
+    clearTimeout(myTimeOut);
+    myTimeOut = window.setTimeout(function () { alert('Ok') }, 15000);
+
 }
 
 function onDisconnected() {

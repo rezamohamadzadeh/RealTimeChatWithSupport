@@ -118,7 +118,7 @@ namespace RealTimeChatWithSupport.Services
                     if (chatRoom.UserId != userId)
                         return Task.FromResult(chatMessages);
 
-                    chatMessages = dbContext.ChatMessages.Where(d => d.ChatRoomId == roomId).OrderBy(x => x.SentAt).ToList();
+                    chatMessages = dbContext.ChatMessages.Where(d => d.ChatRoomId == roomId).OrderBy(x => x.DateTime).ToList();
 
                 }
 

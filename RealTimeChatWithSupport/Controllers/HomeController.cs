@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using RealTimeChatWithSupport.AppContext;
+using RealTimeChatWithSupport.Dtos;
 using RealTimeChatWithSupport.Models;
 using RealTimeChatWithSupport.Utility;
 
@@ -60,7 +61,6 @@ namespace RealTimeChatWithSupport.Controllers
                     {
                         ChatRoomId = new Guid(modeldto.RoomId),
                         SenderName = User.FindFirstValue(ClaimTypes.Name),
-                        SentAt = DateTimeOffset.Now,
                         Text = !CheckFileIsImage(fileExtention) ?
                         "<a href=" + remotePath + " target='_blank'> Download File </a>" :
                         "<img src=" + remotePath + " alt='Image' height='250' width='250'/>"
@@ -71,7 +71,6 @@ namespace RealTimeChatWithSupport.Controllers
                     await _chatHub.Clients.Group(modeldto.RoomId).SendAsync(
                     "ReceiveMessage",
                     model.SenderName,
-                    model.SentAt,
                     model.Text);
 
                     return View();

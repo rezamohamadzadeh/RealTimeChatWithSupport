@@ -5,19 +5,11 @@ using System.Threading.Tasks;
 
 namespace RealTimeChatWithSupport.Models
 {
-    public class ChatMessage
-    {
-        public ChatMessage()
-        {
-            Id = Guid.NewGuid();
-        }
-        public Guid Id { get; set; }
-
+    public class ChatMessage : BaseEntity
+    {       
         public string SenderName { get; set; }
 
         public string Text { get; set; }
-
-        public DateTimeOffset SentAt { get; set; }
 
         public Guid ChatRoomId { get; set; }
 

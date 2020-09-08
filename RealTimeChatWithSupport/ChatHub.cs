@@ -100,8 +100,7 @@ namespace RealTimeChatWithSupport
             var message = new ChatMessage
             {
                 SenderName = name,
-                Text = text,
-                SentAt = DateTimeOffset.UtcNow
+                Text = text
             };
 
             await _chatRoomService.AddMessage(room.Id, message);
@@ -110,9 +109,7 @@ namespace RealTimeChatWithSupport
             await Clients.Group(room.Id.ToString()).SendAsync(
                 "ReceiveMessage",
                 message.SenderName,
-                message.SentAt,
-                message.Text);
-
+                message.Text);            
         }
         /// <summary>
         ///(Create group by userName) This function is executed when the user selects the connection button by connecting
@@ -205,6 +202,17 @@ namespace RealTimeChatWithSupport
 
             await Groups.RemoveFromGroupAsync(
                 Context.ConnectionId, roomId.ToString());
+        }
+
+        /// <summary>
+        /// Initialize InitSurveyForm for user if admin dont answer after 2 min!
+        /// </summary>
+        /// <returns></returns>
+
+        [Authorize]
+        public async Task InitSurveyForm(Guid roomId)
+        {
+            await Clients.Group(roomId.ToString()).SendAsync("RunTimeOut");
         }
     }
 }

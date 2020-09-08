@@ -1,18 +1,12 @@
-﻿using System;
-
-namespace RealTimeChatWithSupport.Models
+﻿namespace RealTimeChatWithSupport.Models
 {
-    public class ChatRoom
+    public class ChatRoom : BaseEntity
     {
-        public ChatRoom()
-        {
-            Id = Guid.NewGuid();
-        }
-        public Guid Id { get; set; }
-
+        
         public string OwnerConnectionId { get; set; }
 
         public string Name { get; set; }
+
         public string UserId { get; set; }
 
     }

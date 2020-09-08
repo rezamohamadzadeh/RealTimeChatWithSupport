@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace RealTimeChatWithSupport.Models
+namespace RealTimeChatWithSupport.Dtos
 {
     public class SendFileDto
     {

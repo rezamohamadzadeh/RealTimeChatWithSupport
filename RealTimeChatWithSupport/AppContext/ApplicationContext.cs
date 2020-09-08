@@ -26,7 +26,9 @@ namespace RealTimeChatWithSupport.AppContext
             
         }
 
-        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<Answer> Answers { get; set; }
         public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
     }
 }

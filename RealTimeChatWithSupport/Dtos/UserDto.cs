@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RealTimeChatWithSupport.Models
+namespace RealTimeChatWithSupport.Dtos
 {
     public class UserDto
     {

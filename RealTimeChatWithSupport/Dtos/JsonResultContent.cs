@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 
-namespace RealTimeChatWithSupport.Models
+namespace RealTimeChatWithSupport.Dtos
 {
     public class JsonResultContent
     {

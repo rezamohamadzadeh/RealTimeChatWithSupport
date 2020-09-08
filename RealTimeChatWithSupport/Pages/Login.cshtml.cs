@@ -4,13 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using RealTimeChatWithSupport.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
+using RealTimeChatWithSupport.Dtos;
+
 namespace RealTimeChatWithSupport.Pages
 {
     [AllowAnonymous]
