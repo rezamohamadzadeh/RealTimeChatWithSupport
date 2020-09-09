@@ -18,7 +18,7 @@ namespace RealTimeChatWithSupport.Services
     {
         private IHttpContextAccessor _httpAccessor { get; }
         private IServiceProvider _sp;
-        public MemoryChatRoomService(IHttpContextAccessor httpAccessor,IServiceProvider sp)
+        public MemoryChatRoomService(IHttpContextAccessor httpAccessor, IServiceProvider sp)
         {
             _httpAccessor = httpAccessor;
             _sp = sp;
@@ -209,7 +209,24 @@ namespace RealTimeChatWithSupport.Services
             }
             return Task.FromResult(room);
         }
-        
 
+        public Task<List<Question>> GetQuestionsForm()
+        {
+            try
+            {
+                List<Question> questions;
+                using (var scope = _sp.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                    questions = dbContext.Questions.ToList();
+                }
+
+                return Task.FromResult(questions);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

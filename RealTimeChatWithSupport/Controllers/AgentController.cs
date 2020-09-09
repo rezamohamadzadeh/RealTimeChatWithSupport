@@ -68,6 +68,7 @@ namespace RealTimeChatWithSupport.Controllers
                             .Group(modeldto.RoomId.ToString())
                             .SendAsync("ReceiveMessage",
                                 model.SenderName,
+                                model.DateTime,
                                 model.Text);
                     
                     return View();

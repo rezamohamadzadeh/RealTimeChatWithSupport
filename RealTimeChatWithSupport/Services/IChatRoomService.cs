@@ -21,5 +21,7 @@ namespace RealTimeChatWithSupport.Services
 
         Task<ChatRoom> GetRoom(Guid roomId);
 
+        Task<List<Question>> GetQuestionsForm();
+
     }
 }

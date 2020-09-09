@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using RealTimeChatWithSupport.AppContext;
 using RealTimeChatWithSupport.Dtos;
 using RealTimeChatWithSupport.Models;
@@ -71,6 +73,7 @@ namespace RealTimeChatWithSupport.Controllers
                     await _chatHub.Clients.Group(modeldto.RoomId).SendAsync(
                     "ReceiveMessage",
                     model.SenderName,
+                    model.DateTime,
                     model.Text);
 
                     return View();
@@ -82,6 +85,47 @@ namespace RealTimeChatWithSupport.Controllers
             }
 
             return View();
+        }
+
+        public async Task<JsonResult> SetVote(string id, int answer,string formid)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(id) && answer <= 0)
+                    return Json(new { success = false, message = "BadRequest !" });
+
+                Guid newId = new Guid(id);
+                Guid frmId = new Guid(formid);
+                var userAnswer = await _context.QuestionAnswers.FirstOrDefaultAsync(d => d.QuestionId == newId && d.FormId == frmId);
+                if (userAnswer != null)
+                {
+                    userAnswer.UserAnswer = (AnswerOptions)answer;
+                    _context.QuestionAnswers.Update(userAnswer);
+
+                }
+                else
+                {
+                    var model = new QuestionAnswer
+                    {
+                        Question = null,
+                        QuestionId = newId,
+                        UserAnswer = (AnswerOptions)answer,
+                        UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                        FormId = frmId
+                    };
+                    await _context.AddAsync(model);
+                }
+                
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Is Success" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error in submit voute ! \n" + ex.Message });
+
+            }
+
         }
     }
 }

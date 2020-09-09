@@ -14,6 +14,9 @@ namespace RealTimeChatWithSupport.Models
         [Required]
         public string UserId { get; set; }
 
+        [Required]
+        public Guid FormId { get; set; }
+
 
         [ForeignKey("QuestionId")]
         public virtual Question Question { get; set; }

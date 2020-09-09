@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 
 namespace RealTimeChatWithSupport
 {
@@ -32,7 +33,11 @@ namespace RealTimeChatWithSupport
             services.AddHttpClient();
             services.AddSingleton<IChatRoomService, MemoryChatRoomService>();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                }); ;
             services.AddRazorPages();
 
             services.AddDbContext<ApplicationContext>();

@@ -89,7 +89,9 @@ namespace RealTimeChatWithSupport
                 .Group(roomId.ToString())
                 .SendAsync("ReceiveMessage",
                     message.SenderName,
-                    message.Text);
+                    message.DateTime,
+                    message.Text
+                    );
 
             await Clients.Caller.SendAsync("RunTimer");
                 

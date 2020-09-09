@@ -109,7 +109,8 @@ namespace RealTimeChatWithSupport
             await Clients.Group(room.Id.ToString()).SendAsync(
                 "ReceiveMessage",
                 message.SenderName,
-                message.Text);            
+                message.DateTime,
+                message.Text);
         }
         /// <summary>
         ///(Create group by userName) This function is executed when the user selects the connection button by connecting
@@ -127,7 +128,7 @@ namespace RealTimeChatWithSupport
                 Context.ConnectionId);
 
             room = await _chatRoomService.SetRoomName(room.Id, roomName);
-            
+
             var claimsIdentity = (ClaimsIdentity)_httpContext.HttpContext.User.Identity;
 
             if (!claimsIdentity.HasClaim(c => c.Type == "RoomId"))
@@ -214,5 +215,16 @@ namespace RealTimeChatWithSupport
         {
             await Clients.Group(roomId.ToString()).SendAsync("RunTimeOut");
         }
+
+        [Authorize]
+        public async Task GetQuestions()
+        {
+            var questions = _chatRoomService.GetQuestionsForm();
+
+            await Clients.Caller.SendAsync("QuestionList", questions);
+            await Clients.Caller.SendAsync("GenerateFormId", Guid.NewGuid().ToString());
+        }
+
+
     }
 }
