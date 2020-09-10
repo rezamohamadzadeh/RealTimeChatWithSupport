@@ -224,6 +224,14 @@ namespace RealTimeChatWithSupport
             await Clients.Caller.SendAsync("QuestionList", questions);
             await Clients.Caller.SendAsync("GenerateFormId", Guid.NewGuid().ToString());
         }
+        [Authorize]
+        public async Task CancelChat(Guid roomId)
+        {
+            var questions = _chatRoomService.GetQuestionsForm();
+            await Clients.OthersInGroup(roomId.ToString()).SendAsync("QuestionList", questions);
+            await Clients.OthersInGroup(roomId.ToString()).SendAsync("GenerateFormId", Guid.NewGuid().ToString());
+
+        }
 
 
     }

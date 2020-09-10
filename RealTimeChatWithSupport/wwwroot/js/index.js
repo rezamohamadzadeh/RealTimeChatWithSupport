@@ -14,6 +14,7 @@ connection.on('PassRoomId', PassId);
 connection.on('RunTimeOut', runSetTimeOut);
 connection.on('QuestionList', QuestionsValues)
 connection.on('GenerateFormId', SetFormId)
+
 connection.onclose(function () {
     onDisconnected();
     setTimeout(startConnection, 5000);

@@ -17,7 +17,10 @@ function startAgentConnection() {
         });
 
 }
-
+function cancelChat() {
+    var roomId = activeRoomId;
+    chatConnection.invoke('CancelChat', roomId);
+}
 var chatConnection = new signalR.HubConnectionBuilder()
     .withUrl('/chatHub')
     .build();

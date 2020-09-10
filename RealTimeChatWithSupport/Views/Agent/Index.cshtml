@@ -29,7 +29,9 @@
                 <div class="col-md-12">
                     <form id="chatForm" class="form-inline mt-2">
                         <input id="messageTextbox" type="text" placeholder="Type a message" class="form-control mr-sm-2 flex-grow-1" />
-                        <button type="submit" class="btn btn-primary">Send</button>
+                        <button type="submit" class="btn btn-primary mr-2">Send</button>
+                        <button type="button" onclick="cancelChat()" class="btn btn-danger" id="CancelChat">Cancel</button>
+
                     </form>
                     <form id="fileForm" action="Index" data-ajax-failure="AddFailed" data-ajax-success="AddSuccess"
                           data-ajax="true" data-ajax-method="POST" enctype="multipart/form-data">
@@ -47,6 +49,7 @@
 <script src="~/js/agent.js"></script>
 
 <script>
+    
     function AddFailed() {
     }
     function AddSuccess() {
