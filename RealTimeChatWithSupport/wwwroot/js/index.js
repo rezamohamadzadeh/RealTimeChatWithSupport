@@ -31,7 +31,7 @@ function runSetTimeOut() {
     clearTimeout(myTimeOut);
     myTimeOut = window.setTimeout(function () {
         connection.invoke('GetQuestions');
-    }, 10000);
+    }, 20000);
 
 }
 function QuestionsValues(values, pageIndex = 0) {
@@ -202,6 +202,10 @@ function onConnected() {
 
     connection.invoke('SetName', chatterName);
     connection.invoke('GetRoomId');
+    clearTimeout(myTimeOut);
+    myTimeOut = window.setTimeout(function () {
+        connection.invoke('GetQuestions');
+    }, 20000);
 }
 
 
