@@ -122,7 +122,7 @@ namespace RealTimeChatWithSupport
         [Authorize]
         public async Task SetName(string visitorName)
         {
-            var roomName = $"For chat with {visitorName} click here";
+            var roomName = $"{visitorName}";
 
             var room = await _chatRoomService.GetRoomForConnectionId(
                 Context.ConnectionId);

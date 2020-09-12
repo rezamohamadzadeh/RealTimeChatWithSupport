@@ -51,6 +51,7 @@ function PassId(roomId) {
     var chatFormEl = document.getElementById('fileForm');
     chatFormEl[1].value = roomId;
 }
+
 function handleDisconnected(retryFunc) {
     timeOut = setTimeout(retryFunc, 5000);
     clearTimeout()
@@ -101,11 +102,11 @@ var roomHistoryEl = document.getElementById('chatHistory');
 //when send message with select Send btn
 
 roomListEl.addEventListener('click', function (e) {
-    roomHistoryEl.style.display = 'block';
-    setActiveRoomButton(e.target);
+    //roomHistoryEl.style.display = 'block';
+    //setActiveRoomButton(e.target);
 
     var roomId = e.target.getAttribute('data-id');
-
+    alert(roomId);
     switchActiveRoomTo(roomId);
     agentConnection.invoke('GetRoomID', activeRoomId);
     agentConnection.invoke('GetRoomIdForUpFile');
@@ -120,7 +121,7 @@ agentConnection.on("SetNewRoom", (room) => {
     var roomInfo = room;
     if (!roomInfo.name) return;
     var roomButton = createRoomButton(roomInfo);
-    roomListEl.appendChild(roomButton);
+    $("#roomList").append(roomButton);
 });
 // when support select room
 function setActiveRoomButton(el) {
@@ -138,25 +139,44 @@ function loadRooms(rooms) {
 
     switchActiveRoomTo(null);
     removeAllChildren(roomListEl);
+
     rooms.forEach(function (item, index) {
         var roomInfo = rooms[index];
         if (!roomInfo.name) return;
         var roomButton = createRoomButton(roomInfo);
-        roomListEl.appendChild(roomButton);
+        $("#roomList").append(roomButton);
     });
+    
+
 }
 
 
 
 //Create room with a tag
 function createRoomButton(roomInfo) {
-    var anchorEl = document.createElement('a');
-    anchorEl.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
-    anchorEl.setAttribute('data-id', roomInfo.id);
-    anchorEl.textContent = roomInfo.name;
-    anchorEl.href = '#';
+    var header = roomInfo.name.charAt(0);
 
-    return anchorEl;
+    var room = `<li>
+                    <a href="#" data-id=`+ roomInfo.id + `>
+                        <div class="media">
+                            <div class="chat-user-img online align-self-center mr-3">
+                                <div class="avatar-xs">
+                                    <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                        ` + header.toUpperCase() + `
+                                    </span>
+                                </div>
+                                <span class="user-status"></span>
+                            </div>
+                            <div class="media-body overflow-hidden">
+                                <h5 class="text-truncate font-size-15 mb-1">`+ roomInfo.name + `</h5>
+                                <p class="chat-user-message text-truncate mb-0">Hey! there I'm available</p>
+                            </div>
+                            <div class="font-size-11">05 min</div>
+                        </div>
+                    </a>
+                </li>`;
+    
+    return room;
 }
 // Send message
 function addMessages(messages) {

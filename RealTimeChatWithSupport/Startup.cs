@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace RealTimeChatWithSupport
 {
@@ -23,11 +24,7 @@ namespace RealTimeChatWithSupport
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            
             services.AddHttpContextAccessor();
             services.AddSignalR();
             services.AddHttpClient();
@@ -37,19 +34,27 @@ namespace RealTimeChatWithSupport
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                }); ;
-            services.AddRazorPages();
+                });
 
             services.AddDbContext<ApplicationContext>();
 
-            services.AddAuthentication(options =>
+            services.AddAuthentication(opt =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
+                opt.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                opt.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            }).AddCookie(op =>
             {
-                options.LoginPath = "/Login";
-                options.AccessDeniedPath = "/AccessDenied";
+                op.SlidingExpiration = false;
+                op.LoginPath = "/Account/Login";
+                op.LogoutPath = "/Account/LogOut";
+                op.AccessDeniedPath = new PathString("/Account/AccessDenied");
+                op.Cookie.Name = "Support.Cookie";
+                op.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                op.Cookie.SameSite = SameSiteMode.Strict;
+                op.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                op.SlidingExpiration = true;                
             });
         }
 
@@ -71,17 +76,12 @@ namespace RealTimeChatWithSupport
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseEndpoints(endpoint => {
-            //    endpoint.MapRazorPages();
-            //    endpoint.MapHub<ChatHub>("/chatHub");
-            //    endpoint.MapHub<AgentHub>("/agentHub");
-            //});
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
                 endpoints.MapHub<ChatHub>("/chatHub");
                 endpoints.MapHub<AgentHub>("/agentHub");
             });

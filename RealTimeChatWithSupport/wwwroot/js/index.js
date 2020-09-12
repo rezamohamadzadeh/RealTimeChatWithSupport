@@ -308,5 +308,4 @@ function renderMessage(name, time, message) {
     chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight - chatHistoryEl.clientHeight;
 }
 
-
 document.addEventListener('DOMContentLoaded', ready);
