@@ -16,11 +16,11 @@ namespace RealTimeChatWithSupport
     [Authorize]
     public class AgentHub : Hub
     {
-        private readonly IChatRoomService _chatRoomService;
+        private readonly IChatRoom _chatRoomService;
         private readonly IHubContext<ChatHub> _chatHub;
 
         public AgentHub(
-            IChatRoomService chatRoomService,
+            IChatRoom chatRoomService,
             IHubContext<ChatHub> chatHub)
         {
             _chatRoomService = chatRoomService;
@@ -37,6 +37,7 @@ namespace RealTimeChatWithSupport
                 "ActiveRooms",
                 await _chatRoomService.GetAllRooms());
 
+            await Clients.Caller.SendAsync("GetUserName", Context.User.Identity.Name);
             await base.OnConnectedAsync();
         }
 
@@ -116,6 +117,8 @@ namespace RealTimeChatWithSupport
             {
                 claimsIdentity.AddClaim(new Claim("RoomId", roomId.ToString()));
             }
+
+
         }
         /// <summary>
         /// To pass the group code to View and bind it in the hidden input tag to refer to the action of sending the file

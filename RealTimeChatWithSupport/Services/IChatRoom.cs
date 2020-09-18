@@ -5,21 +5,21 @@ using System.Threading.Tasks;
 
 namespace RealTimeChatWithSupport.Services
 {
-    public interface IChatRoomService
+    public interface IChatRoom
     {
         Task<Guid> CreateRoom(string connectionId);
 
-        Task<ChatRoom> GetRoomForConnectionId(string connectionId);
+        Task<Models.ChatRoom> GetRoomForConnectionId(string connectionId);
 
-        Task<ChatRoom> SetRoomName(Guid roomId, string name);
+        Task<Models.ChatRoom> SetRoomName(Guid roomId, string name);
 
         Task AddMessage(Guid roomId, ChatMessage message);
 
         Task<List<ChatMessage>> GetMessageHistory(Guid roomId);
 
-        Task<List<ChatRoom>> GetAllRooms();
+        Task<List<Models.ChatRoom>> GetAllRooms();
 
-        Task<ChatRoom> GetRoom(Guid roomId);
+        Task<Models.ChatRoom> GetRoom(Guid roomId);
 
         Task<List<Question>> GetQuestionsForm();
 

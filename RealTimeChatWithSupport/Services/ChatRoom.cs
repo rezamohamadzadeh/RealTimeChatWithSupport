@@ -14,11 +14,11 @@ namespace RealTimeChatWithSupport.Services
     /// <summary>
     /// These functions are used to record information in the database.
     /// </summary>
-    public class MemoryChatRoomService : IChatRoomService
+    public class ChatRoom : IChatRoom
     {
         private IHttpContextAccessor _httpAccessor { get; }
         private IServiceProvider _sp;
-        public MemoryChatRoomService(IHttpContextAccessor httpAccessor, IServiceProvider sp)
+        public ChatRoom(IHttpContextAccessor httpAccessor, IServiceProvider sp)
         {
             _httpAccessor = httpAccessor;
             _sp = sp;
@@ -60,7 +60,7 @@ namespace RealTimeChatWithSupport.Services
         {
             try
             {
-                var room = new ChatRoom
+                var room = new Models.ChatRoom
                 {
                     OwnerConnectionId = connectionId,
                 };
@@ -81,16 +81,20 @@ namespace RealTimeChatWithSupport.Services
         /// Get all rooms(groups) for Admin 
         /// </summary>
         /// <returns></returns>
-        public Task<List<ChatRoom>> GetAllRooms()
+        public Task<List<Models.ChatRoom>> GetAllRooms()
         {
             try
             {
-                List<ChatRoom> rooms;
+                List<Models.ChatRoom> rooms;
                 var userId = _httpAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 using (var scope = _sp.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                    rooms = dbContext.ChatRooms.Where(d => d.UserId == userId || d.UserId == null).ToList();
+                    rooms = dbContext
+                        .ChatRooms
+                        .Where(d => d.UserId == userId || d.UserId == null)
+                        .OrderByDescending(d => d.DateTime)
+                        .ToList();
                 }
                 return Task.FromResult(rooms);
             }
@@ -134,11 +138,11 @@ namespace RealTimeChatWithSupport.Services
         /// </summary>
         /// <param name="connectionId"></param>
         /// <returns></returns>
-        public Task<ChatRoom> GetRoomForConnectionId(string connectionId)
+        public Task<Models.ChatRoom> GetRoomForConnectionId(string connectionId)
         {
             try
             {
-                ChatRoom foundRoom;
+                Models.ChatRoom foundRoom;
                 using (var scope = _sp.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
@@ -166,11 +170,11 @@ namespace RealTimeChatWithSupport.Services
         /// <param name="roomId"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public Task<ChatRoom> SetRoomName(Guid roomId, string name)
+        public Task<Models.ChatRoom> SetRoomName(Guid roomId, string name)
         {
             try
             {
-                ChatRoom room;
+                Models.ChatRoom room;
                 using (var scope = _sp.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
@@ -198,9 +202,9 @@ namespace RealTimeChatWithSupport.Services
         /// </summary>
         /// <param name="roomId"></param>
         /// <returns></returns>
-        public Task<ChatRoom> GetRoom(Guid roomId)
+        public Task<Models.ChatRoom> GetRoom(Guid roomId)
         {
-            ChatRoom room;
+            Models.ChatRoom room;
             using (var scope = _sp.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();

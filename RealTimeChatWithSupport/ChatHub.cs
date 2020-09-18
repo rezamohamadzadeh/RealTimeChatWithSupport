@@ -15,14 +15,14 @@ namespace RealTimeChatWithSupport
 {
     public class ChatHub : Hub
     {
-        private readonly IChatRoomService _chatRoomService;
+        private readonly IChatRoom _chatRoomService;
         private readonly IHubContext<AgentHub> _agentHub;
         private IServiceProvider _sp;
 
         public IHttpContextAccessor _httpContext { get; }
 
         public ChatHub(
-            IChatRoomService chatRoomService,
+            IChatRoom chatRoomService,
             IHubContext<AgentHub> agentHub,
             IServiceProvider sp,
             IHttpContextAccessor httpContext)
@@ -60,7 +60,7 @@ namespace RealTimeChatWithSupport
         /// Method of sconnecting the user
         /// </summary>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         public override async Task OnConnectedAsync()
         {
             var role = _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Role);
@@ -91,7 +91,7 @@ namespace RealTimeChatWithSupport
         /// <param name="name"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         public async Task SendMessage(string name, string text)
         {
             var room = await _chatRoomService.GetRoomForConnectionId(
@@ -119,7 +119,7 @@ namespace RealTimeChatWithSupport
         /// <param name="visitorName"></param>
         /// <returns></returns>
 
-        [Authorize]
+        ////[Authorize]
         public async Task SetName(string visitorName)
         {
             var roomName = $"{visitorName}";
@@ -143,7 +143,7 @@ namespace RealTimeChatWithSupport
         /// to send the file
         /// </summary>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         public async Task GetRoomId()
         {
             var roomId = Context.User.FindFirstValue("RoomId");
@@ -155,7 +155,7 @@ namespace RealTimeChatWithSupport
         /// </summary>
         /// <param name="roomId"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         public async Task JoinRoom(Guid roomId)
         {
             try
@@ -195,7 +195,7 @@ namespace RealTimeChatWithSupport
         /// </summary>
         /// <param name="roomId"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         public async Task LeaveRoom(Guid roomId)
         {
             if (roomId == Guid.Empty)
@@ -210,13 +210,13 @@ namespace RealTimeChatWithSupport
         /// </summary>
         /// <returns></returns>
 
-        [Authorize]
+        //[Authorize]
         public async Task InitSurveyForm(Guid roomId)
         {
             await Clients.Group(roomId.ToString()).SendAsync("RunTimeOut");
         }
 
-        [Authorize]
+        //[Authorize]
         public async Task GetQuestions()
         {
             var questions = _chatRoomService.GetQuestionsForm();
@@ -224,7 +224,7 @@ namespace RealTimeChatWithSupport
             await Clients.Caller.SendAsync("QuestionList", questions);
             await Clients.Caller.SendAsync("GenerateFormId", Guid.NewGuid().ToString());
         }
-        [Authorize]
+        //[Authorize]
         public async Task CancelChat(Guid roomId)
         {
             var questions = _chatRoomService.GetQuestionsForm();

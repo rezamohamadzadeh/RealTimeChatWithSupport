@@ -1,5 +1,4 @@
-﻿@model RealTimeChatWithSupport.Dtos.SendFileDto
-@using System.Security.Claims;
+﻿@using System.Security.Claims;
 @{
     ViewData["Title"] = "Welcome !";
 }
@@ -22,32 +21,46 @@
                     <input id="messageTextbox" type="text" placeholder="Type a message" />
                     <button type="submit">Send</button>
                 </form>
+                <input type="file" id="file-input" name="file" />
+                <input  id="roomId" hidden="hidden"/>
+                <button type="button" onclick="UpFile();" id="SendFile">Send</button>
 
-                <form id="fileForm" action="Index" data-ajax-failure="AddFailed" data-ajax-success="AddSuccess"
-                      data-ajax="true" data-ajax-method="POST" enctype="multipart/form-data">
-                    <input type="file" asp-for="File" name="file" />
-                    <input type="hidden" asp-for="RoomId" name="RoomId" />
-                    <button type="submit" id="SendFile">Send</button>
-
-                </form>
             </div>
         </div>
     </div>
 
+<script src="~/js/index.js"></script>
 <script>
-    function GetVal() {
-        var radioValue = $("input[name='option']:checked").val();
-        if (radioValue) {
-            alert("Your answer is " + radioValue);
+    function UpFile() {
+        // Checking whether FormData is available in browser  
+        if (window.FormData !== undefined) {
+
+            var fileUpload = $("#file-input").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object  
+            var fileData = new FormData();
+            fileData.append("RoomId", $("#roomId").val());
+            // Looping over all files and add it to FormData object  
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+
+            $.ajax({
+                url: '/Home/GetFile',
+                type: "POST",
+                contentType: false, // Not to set any content header  
+                processData: false, // Not to process data  
+                data: fileData,
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (err) {
+                    console.log(err.statusText);
+                }
+            });
+        } else {
+            alert("FormData is not supported.");
         }
     }
-</script>
-<script src="~/js/index.js"></script>
-
-<script>
-    function AddFailed() {
-    }
-    function AddSuccess() {
-    }
-
 </script>

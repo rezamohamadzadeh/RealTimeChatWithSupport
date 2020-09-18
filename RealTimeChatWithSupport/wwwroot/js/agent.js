@@ -1,14 +1,19 @@
 ﻿var activeRoomId = '';
+var userName = '';
 var agentConnection = new signalR.HubConnectionBuilder()
     .withUrl('/agentHub')
     .build();
 
 agentConnection.on('ActiveRooms', loadRooms);
+agentConnection.on('GetUserName', setUserName);
 
 agentConnection.onclose(function () {
     handleDisconnected(startAgentConnection);
 });
 
+function setUserName(user) {
+    userName = user;
+}
 function startAgentConnection() {
     agentConnection
         .start()
@@ -48,8 +53,7 @@ function startChatConnection() {
         });
 }
 function PassId(roomId) {
-    var chatFormEl = document.getElementById('fileForm');
-    chatFormEl[1].value = roomId;
+    $("#RoomId").val(roomId)
 }
 
 function handleDisconnected(retryFunc) {
@@ -68,14 +72,14 @@ function ready() {
     startAgentConnection();
     startChatConnection();
 
-    var chatFormEl = document.getElementById('chatForm');
-    chatFormEl.addEventListener('submit', function (e) {
+    $("#chatForm").submit(function (e) {
         e.preventDefault();
 
         var text = e.target[0].value;
         e.target[0].value = '';
         sendMessage(text);
     });
+
 }
 
 function switchActiveRoomTo(id) {
@@ -92,6 +96,16 @@ function switchActiveRoomTo(id) {
 
     chatConnection.invoke('JoinRoom', activeRoomId);
     agentConnection.invoke('LoadHistory', activeRoomId);
+    var userAvatarName = $('#' + activeRoomId).val();
+    var header = userAvatarName.charAt(0);
+
+    $("#userAvatarOnChatHeader").html(`<div class="avatar-xs">
+                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                `+ header + `
+                                            </span>
+                                        </div>`);
+    $("#userAvatarOnChatHeader").html(`<h5 class="font-size-16 mb-0 text-truncate"><a href="#" class="text-reset user-profile-show">` + userAvatarName + `</a> <i class="ri-record-circle-fill font-size-10 text-success d-inline-block ml-1"></i></h5>`);
+
 
 }
 
@@ -99,14 +113,19 @@ function switchActiveRoomTo(id) {
 var roomListEl = document.getElementById('roomList');
 var roomHistoryEl = document.getElementById('chatHistory');
 
-//when send message with select Send btn
 
-roomListEl.addEventListener('click', function (e) {
-    //roomHistoryEl.style.display = 'block';
-    //setActiveRoomButton(e.target);
-
+$("#roomList").click(function (e) {
     var roomId = e.target.getAttribute('data-id');
-    alert(roomId);
+
+    $("#roomList li a").click(function (e) {
+        $("#roomList li").removeClass("active");
+        $(this).closest('li').addClass('active');
+    });
+
+    $("#chatDiv").show();
+    $("#chatForm").show();
+    $("#chatHistory").show();
+
     switchActiveRoomTo(roomId);
     agentConnection.invoke('GetRoomID', activeRoomId);
     agentConnection.invoke('GetRoomIdForUpFile');
@@ -120,19 +139,13 @@ agentConnection.on("GetRoomIdForFilterRooms", (roomId) => {
 agentConnection.on("SetNewRoom", (room) => {
     var roomInfo = room;
     if (!roomInfo.name) return;
-    var roomButton = createRoomButton(roomInfo);
-    $("#roomList").append(roomButton);
+    var newRoomButton = createRoomButton(roomInfo);
+
+    var roomButton = document.getElementById('roomList').innerHTML;
+    var room = newRoomButton + roomButton;
+    $("#roomList").html(room);
 });
-// when support select room
-function setActiveRoomButton(el) {
-    var allButtons = roomListEl.querySelectorAll('a.list-group-item');
 
-    allButtons.forEach(function (btn) {
-        btn.classList.remove('active');
-    });
-
-    el.classList.add('active');
-}
 // load all rooms for support
 function loadRooms(rooms) {
     if (!rooms) return;
@@ -145,37 +158,72 @@ function loadRooms(rooms) {
         if (!roomInfo.name) return;
         var roomButton = createRoomButton(roomInfo);
         $("#roomList").append(roomButton);
+
     });
-    
+
 
 }
 
+function openfile(a) {
+    $(a).trigger('click');
+}
+function UpFile() {
+    // Checking whether FormData is available in browser  
+    if (window.FormData !== undefined) {
 
+        var fileUpload = $("#file-input").get(0);
+        var files = fileUpload.files;
+
+        // Create FormData object  
+        var fileData = new FormData();
+        fileData.append("RoomId", $("#RoomId").val());
+        // Looping over all files and add it to FormData object  
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+
+        $.ajax({
+            url: '/Agent/GetFile',
+            type: "POST",
+            contentType: false, // Not to set any content header  
+            processData: false, // Not to process data  
+            data: fileData,
+            success: function (result) {
+                console.log(result);
+            },
+            error: function (err) {
+                console.log(err.statusText);
+            }
+        });
+    } else {
+        alert("FormData is not supported.");
+    }
+}
 
 //Create room with a tag
 function createRoomButton(roomInfo) {
     var header = roomInfo.name.charAt(0);
 
+    var id = roomInfo.id;
     var room = `<li>
                     <a href="#" data-id=`+ roomInfo.id + `>
-                        <div class="media">
-                            <div class="chat-user-img online align-self-center mr-3">
-                                <div class="avatar-xs">
-                                    <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                        <input type="hidden" id=`+ id +` value=`+ roomInfo.name +` />
+                        <div class="media" data-id=`+ roomInfo.id + ` class="list-group-item">
+                            <div class="chat-user-img online align-self-center mr-3" data-id=`+ roomInfo.id + ` >
+                                <div class="avatar-xs" data-id=`+ roomInfo.id + `>
+                                    <span class="avatar-title rounded-circle bg-soft-primary text-primary" data-id=`+ roomInfo.id + `>
                                         ` + header.toUpperCase() + `
                                     </span>
                                 </div>
-                                <span class="user-status"></span>
                             </div>
-                            <div class="media-body overflow-hidden">
-                                <h5 class="text-truncate font-size-15 mb-1">`+ roomInfo.name + `</h5>
-                                <p class="chat-user-message text-truncate mb-0">Hey! there I'm available</p>
+                            <div class="media-body overflow-hidden" data-id=`+ roomInfo.id + `>
+                                <h5 class="text-truncate font-size-15 mb-1" data-id=`+ roomInfo.id + `>` + roomInfo.name + `</h5>
+                                <p class="chat-user-message text-truncate mb-0" data-id=`+ roomInfo.id + `>Hey! there I'm available</p>
                             </div>
-                            <div class="font-size-11">05 min</div>
                         </div>
                     </a>
                 </li>`;
-    
+
     return room;
 }
 // Send message
@@ -183,7 +231,7 @@ function addMessages(messages) {
     if (!messages) return;
 
     messages.forEach(function (m) {
-        addMessage(m.senderName, m.sentAt, m.text);
+        addMessage(m.senderName, m.dateTime, m.text);
     });
 }
 // if chat window is not focused call GetNotification function
@@ -221,32 +269,66 @@ function GetNotification(name, time, message) {
 function addMessage(name, time, message) {
     if (!CheckWinFocus())
         GetNotification(name, time, message);
-    console.log(name + ' ' + time + ' ' + message)
-    var nameSpan = document.createElement('span');
-    nameSpan.className = 'name';
-    nameSpan.textContent = name;
 
-    var timeSpan = document.createElement('span');
-    timeSpan.className = 'time';
-    var friendlyTime = moment(time).format('H:mm');
-    timeSpan.textContent = friendlyTime;
+    var header = name.charAt(0);
+    var chatMessage = '';
+    if (userName !== name) {
+        chatMessage = `<li>
+                        <div class="conversation-list">
+                            <div class="avatar-xs">
+                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                    ` + header.toUpperCase() + `
+                                </span>
+                            </div>
+                        
+                            <div class="user-chat-content">
+                                <div class="ctext-wrap">
+                                    <div class="ctext-wrap-content">
+                                        <p class="mb-0">
+                                            `+ message + `
+                                        </p>
+                                        <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">`+ time + `</span></p>
+                                    </div>
+                                    
+                                </div>
+                                <div class="conversation-name">`+ name + `</div>
+                            </div>
+                        </div>
+                </li>`;
+    }
+    else {
+        chatMessage = `<li class="right">
+                            <div class="conversation-list">
+                                <div class="chat-avatar">
+                                    <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                    ` + header.toUpperCase() + `
+                                </span>
+                                </div>
+    
+                                <div class="user-chat-content">
+                                    <div class="ctext-wrap">
+                                        <div class="ctext-wrap-content">
+                                            <p class="mb-0">
+                                                `+ message + `
+                                            </p>
+                                            <p class="chat-time mb-0"><i class="ri-time-line align-middle"></i> <span class="align-middle">`+ time + `</span></p>
+                                        </div>
+                                                 
+                                    </div>
+                                    <div class="conversation-name">`+ name + `</div>
+                                </div>
+                            </div>
+                        </li>`;
+    }
 
-    var headerDiv = document.createElement('div');
-    headerDiv.appendChild(nameSpan);
-    headerDiv.appendChild(timeSpan);
 
-    var messageDiv = document.createElement('div');
-    messageDiv.className = 'message';
-    messageDiv.innerHTML = message;
 
-    var newItem = document.createElement('li');
-    newItem.appendChild(headerDiv);
-    newItem.appendChild(messageDiv);
+    $("#chatHistory").append(chatMessage);
 
-    roomHistoryEl.appendChild(newItem);
+
     roomHistoryEl.scrollTop = roomHistoryEl.scrollHeight - roomHistoryEl.clientHeight;
-}
 
+}
 function removeAllChildren(node) {
     if (!node) return;
 

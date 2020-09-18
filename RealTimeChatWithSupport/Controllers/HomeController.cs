@@ -18,7 +18,7 @@ namespace RealTimeChatWithSupport.Controllers
     /// <summary>
     /// Use this controller for users
     /// </summary>
-    [Authorize(Roles = "Affiliate,Buyer")]
+    //[Authorize(Roles = "Affiliate,Buyer")]
     public class HomeController : BaseController
     {
         private readonly IHubContext<ChatHub> _chatHub;
@@ -43,51 +43,54 @@ namespace RealTimeChatWithSupport.Controllers
         /// <returns></returns>
 
         [HttpPost]
-        public virtual async Task<IActionResult> Index(SendFileDto modeldto)
+        public virtual async Task<IActionResult> GetFile(string senderName)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                var File = Request.Form.Files[0];
+                var RoomId = Request.Form["RoomId"].FirstOrDefault();
+
+                if (File == null || string.IsNullOrEmpty(RoomId) || RoomId == "undefined")
+                    return Json(new { error = "The parameters is invalid !" });
+
+
+                var fileExtention = Path.GetExtension(File.FileName);
+                var fileName = Guid.NewGuid().ToString() + fileExtention;
+
+                string savePath = Path.Combine(
+                    Directory.GetCurrentDirectory(), "wwwroot/" + RoomId + "/", fileName
+                );
+                string DirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/" + RoomId + "/");
+                Upload uploader = new Upload();
+                string remotePath = Request.Scheme + "://" + Request.Host.Value + "/" + RoomId + "/" + fileName;
+                await uploader.UploadImage(savePath, DirectoryPath, File);
+
+                var model = new ChatMessage
                 {
-                    var fileExtention = Path.GetExtension(modeldto.File.FileName);
-                    var File = Guid.NewGuid().ToString() + fileExtention;
-                    string savePath = Path.Combine(
-                        Directory.GetCurrentDirectory(), "wwwroot/" + modeldto.RoomId + "/", File
-                    );
-                    string DirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/" + modeldto.RoomId + "/");
-                    Upload uploader = new Upload();
-                    string remotePath = Request.Scheme + "://" + Request.Host.Value + "/" + modeldto.RoomId + "/" + File;
-                    await uploader.UploadImage(savePath, DirectoryPath, modeldto.File);
+                    ChatRoomId = new Guid(RoomId),
+                    SenderName = senderName,
+                    Text = !CheckFileIsImage(fileExtention) ?
+                    "<a href=" + remotePath + " target='_blank' class='text-dark'> Download File </a>" :
+                    "<img src=" + remotePath + " alt='Image' height='250' width='250'/>"
+                };
+                await _context.ChatMessages.AddAsync(model);
+                await _context.SaveChangesAsync();
 
-                    var model = new ChatMessage
-                    {
-                        ChatRoomId = new Guid(modeldto.RoomId),
-                        SenderName = User.FindFirstValue(ClaimTypes.Name),
-                        Text = !CheckFileIsImage(fileExtention) ?
-                        "<a href=" + remotePath + " target='_blank'> Download File </a>" :
-                        "<img src=" + remotePath + " alt='Image' height='250' width='250'/>"
-                    };
-                    await _context.ChatMessages.AddAsync(model);
-                    await _context.SaveChangesAsync();
+                await _chatHub.Clients.Group(RoomId).SendAsync(
+                "ReceiveMessage",
+                model.SenderName,
+                model.DateTime,
+                model.Text);
 
-                    await _chatHub.Clients.Group(modeldto.RoomId).SendAsync(
-                    "ReceiveMessage",
-                    model.SenderName,
-                    model.DateTime,
-                    model.Text);
-
-                    return View();
-                }
-                catch (Exception e)
-                {
-                    return Json(new { error = "The operation failed \n" + e.Message });
-                }
+                return Json(new { message = "The operation success \n" });
             }
-
-            return View();
+            catch (Exception e)
+            {
+                return Json(new { error = "The operation failed \n" + e.Message });
+            }
         }
 
-        public async Task<JsonResult> SetVote(string id, int answer,string formid)
+        public async Task<JsonResult> SetVote(string id, int answer,string formid,string userId)
         {
             try
             {
@@ -110,7 +113,7 @@ namespace RealTimeChatWithSupport.Controllers
                         Question = null,
                         QuestionId = newId,
                         UserAnswer = (AnswerOptions)answer,
-                        UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                        UserId = userId,
                         FormId = frmId
                     };
                     await _context.AddAsync(model);

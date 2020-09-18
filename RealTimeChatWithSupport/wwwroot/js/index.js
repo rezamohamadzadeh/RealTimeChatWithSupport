@@ -6,7 +6,7 @@ var dialogEl = document.getElementById('chatDialog');
 var questionAnswers = [];
 // Initialize the SignalR client
 var connection = new signalR.HubConnectionBuilder()
-    .withUrl('/chatHub')
+    .withUrl('http://localhost:56594/chatHubs')
     .build();
 
 connection.on('ReceiveMessage', renderMessage);
@@ -205,7 +205,7 @@ function onConnected() {
     clearTimeout(myTimeOut);
     myTimeOut = window.setTimeout(function () {
         connection.invoke('GetQuestions');
-    }, 20000);
+    }, 2000000);
 }
 
 
@@ -220,9 +220,7 @@ function sendMessage(text) {
     }
 }
 function PassId(roomId) {
-    var chatFormEl = document.getElementById('fileForm');
-    chatFormEl[1].value = roomId;
-    chatFormEl[2].value = chatterName;
+    $("#roomId").val(roomId);
 }
 
 function ready() {

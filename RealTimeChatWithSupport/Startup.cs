@@ -24,20 +24,44 @@ namespace RealTimeChatWithSupport
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            services.AddHttpContextAccessor();
-            services.AddSignalR();
-            services.AddHttpClient();
-            services.AddSingleton<IChatRoomService, MemoryChatRoomService>();
 
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
+            services.AddSingleton<IChatRoom, ChatRoom>();
+
+            #region AddSignalR
+            services.AddSignalR();
+            #endregion
+
+            #region AddCors
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://localhost:50483")
+                        .AllowCredentials();
+                });
+
+
+            });
+            #endregion
+
+            #region AddMvc
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
+            #endregion
 
+            #region AddDbContext
             services.AddDbContext<ApplicationContext>();
+            #endregion
 
+            #region Authentication
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -54,8 +78,13 @@ namespace RealTimeChatWithSupport
                 op.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 op.Cookie.SameSite = SameSiteMode.Strict;
                 op.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-                op.SlidingExpiration = true;                
+                op.SlidingExpiration = true;
             });
+            #endregion
+
+
+
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -69,19 +98,24 @@ namespace RealTimeChatWithSupport
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            app.UseCors("CorsPolicy");
+
             app.UseRouting();
+
+
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Agent}/{action=Index}/{id?}");
                 endpoints.MapHub<ChatHub>("/chatHub");
                 endpoints.MapHub<AgentHub>("/agentHub");
             });
